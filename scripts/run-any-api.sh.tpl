@@ -30,7 +30,7 @@ DB_PORT=$(echo "$SECRET_JSON" | jq -r '.SecretString | fromjson | .port')
 DB_NAME=$(echo "$SECRET_JSON" | jq -r '.SecretString | fromjson | .dbname')
 
 # Construct the full DATABASE_URL from the parts
-DATABASE_URL="${DB_ENGINE}://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}"
+DATABASE_URL="$${DB_ENGINE}://$${DB_USER}:$${DB_PASSWORD}@$${DB_HOST}:$${DB_PORT}/$${DB_NAME}"
 
 # Run the Docker container with the secret
 sudo docker run -d --rm --pull=always -p 8080:8080 -e DATABASE_URL="$DATABASE_URL" ${aws_account_id}.dkr.ecr.${aws_region}.amazonaws.com/any-api:latest

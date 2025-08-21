@@ -5,7 +5,7 @@ terraform {
       version = "~> 4.0"
     }
     tls = {
-      source = "hashicorp/tls"
+      source  = "hashicorp/tls"
       version = "~> 4.0"
     }
   }
@@ -64,7 +64,7 @@ resource "aws_iam_role" "ec2_any_api_role" {
 # The policy that allows reading the specific secret
 data "aws_iam_policy_document" "secrets_manager_policy" {
   statement {
-    actions   = ["secretsmanager:GetSecretValue"]
+    actions = ["secretsmanager:GetSecretValue"]
     # This dynamically uses the ARN of the secret data source from earlier
     resources = [data.aws_secretsmanager_secret_version.db_credentials.arn]
   }
@@ -101,32 +101,32 @@ resource "aws_instance" "any_api_backend_server" {
     aws_region     = "ap-southeast-2"
     secret_id      = data.aws_secretsmanager_secret_version.db_credentials.secret_id
   })
-  subnet_id     = "subnet-0e175c6eb8916ef25"
+  subnet_id              = "subnet-0e175c6eb8916ef25"
   vpc_security_group_ids = [aws_security_group.any_api_backend_sg.id]
-  iam_instance_profile = aws_iam_instance_profile.ec2_any_api_profile.name
+  iam_instance_profile   = aws_iam_instance_profile.ec2_any_api_profile.name
   tags = {
     Name = "any-api-backend-server"
   }
 }
 
 resource "aws_db_instance" "any_api_postgres_db_v2" {
-  allocated_storage    = 20
-  instance_class       = "db.t4g.micro"
-  engine               = "postgres"
-  engine_version       = "17.4"
-  identifier           = "any-api-postgres-db-v2"
-  username             = local.db_creds.username
-  password             = local.db_creds.password
-  db_name              = local.db_creds.dbname
+  allocated_storage = 20
+  instance_class    = "db.t4g.micro"
+  engine            = "postgres"
+  engine_version    = "17.4"
+  identifier        = "any-api-postgres-db-v2"
+  username          = local.db_creds.username
+  password          = local.db_creds.password
+  db_name           = local.db_creds.dbname
   # identifier           = "any-api-postgres-db-v2-restored"                                                                                             │
   # snapshot_identifier  = "any-api-db-final-snapshot-${timestamp()}"
-  vpc_security_group_ids = [aws_security_group.any_api_rds_sg.id]
-  db_subnet_group_name = aws_db_subnet_group.any_api_rds_subnet_group.name
-  skip_final_snapshot  = false
-  final_snapshot_identifier = "any-api-db-final-snapshot-${timestamp()}"
+  vpc_security_group_ids     = [aws_security_group.any_api_rds_sg.id]
+  db_subnet_group_name       = aws_db_subnet_group.any_api_rds_subnet_group.name
+  skip_final_snapshot        = false
+  final_snapshot_identifier  = "any-api-db-final-snapshot-${formatdate("YYYY-MM-DD-hh-mm-ss", timestamp())}"
   auto_minor_version_upgrade = false
-  copy_tags_to_snapshot = true
-  publicly_accessible = false
+  copy_tags_to_snapshot      = true
+  publicly_accessible        = false
 }
 
 # A group of private subnets for the RDS instance
@@ -191,10 +191,10 @@ resource "aws_lb" "any_api_alb" {
 }
 
 resource "aws_lb_target_group" "any_api_backend_tg" {
-  name     = "any-api-backend-tg"
-  port     = 8080
-  protocol = "HTTP"
-  vpc_id   = "vpc-0549027f59f08d65c"
+  name        = "any-api-backend-tg"
+  port        = 8080
+  protocol    = "HTTP"
+  vpc_id      = "vpc-0549027f59f08d65c"
   target_type = "instance"
 
   health_check {
