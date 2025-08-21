@@ -1,0 +1,16 @@
+# Local Terraform state, credentials, and logs
+*.tfstate
+*.tfstate.*
+crash.log
+*.tfvars
+*.tfvars.json
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# .terraform directory
+.terraform/
+
+# .terraform.lock.hcl file
+.terraform.lock.hcl
