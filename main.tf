@@ -90,11 +90,17 @@ resource "aws_iam_role_policy_attachment" "ecr_read_only_attachment" {
 
 # --- End IAM Role ---
 
+data "aws_caller_identity" "current" {}
+
 resource "aws_instance" "any_api_backend_server" {
   ami           = "ami-093dc6859d9315726"
   instance_type = "t3.micro"
   key_name      = aws_key_pair.any_api_key.key_name
-  user_data     = file("${path.module}/scripts/run-any-api.sh")
+  user_data = templatefile("${path.module}/scripts/run-any-api.sh.tpl", {
+    aws_account_id = data.aws_caller_identity.current.account_id
+    aws_region     = "ap-southeast-2"
+    secret_id      = data.aws_secretsmanager_secret_version.db_credentials.secret_id
+  })
   subnet_id     = "subnet-0e175c6eb8916ef25"
   vpc_security_group_ids = [aws_security_group.any_api_backend_sg.id]
   iam_instance_profile = aws_iam_instance_profile.ec2_any_api_profile.name

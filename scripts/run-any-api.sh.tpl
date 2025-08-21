@@ -9,14 +9,14 @@ sudo systemctl start docker
 sudo usermod -aG docker ec2-user
 
 # Authenticate Docker to your ECR registry
-aws ecr get-login-password --region ap-southeast-2 | docker login --username AWS --password-stdin 293875060805.dkr.ecr.ap-southeast-2.amazonaws.com
+aws ecr get-login-password --region ${aws_region} | docker login --username AWS --password-stdin ${aws_account_id}.dkr.ecr.${aws_region}.amazonaws.com
 
 # Pull the Docker image
-docker pull 293875060805.dkr.ecr.ap-southeast-2.amazonaws.com/any-api-backend:latest
+docker pull ${aws_account_id}.dkr.ecr.${aws_region}.amazonaws.com/any-api-backend:latest
 
 # The name of your key/value secret
-SECRET_ID="any-api/db-user-pass"
-REGION="ap-southeast-2"
+SECRET_ID="${secret_id}"
+REGION="${aws_region}"
 
 # Fetch the secret JSON from AWS Secrets Manager
 SECRET_JSON=$(aws secretsmanager get-secret-value --secret-id "$SECRET_ID" --region "$REGION" --output json)
@@ -33,4 +33,4 @@ DB_NAME=$(echo "$SECRET_JSON" | jq -r '.SecretString | fromjson | .dbname')
 DATABASE_URL="${DB_ENGINE}://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}"
 
 # Run the Docker container with the secret
-sudo docker run -d --rm --pull=always -p 8080:8080 -e DATABASE_URL="$DATABASE_URL" 293875060805.dkr.ecr.ap-southeast-2.amazonaws.com/any-api:latest
+sudo docker run -d --rm --pull=always -p 8080:8080 -e DATABASE_URL="$DATABASE_URL" ${aws_account_id}.dkr.ecr.${aws_region}.amazonaws.com/any-api:latest
